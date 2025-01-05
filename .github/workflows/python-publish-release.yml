@@ -35,7 +35,6 @@ jobs:
     - name: Build a binary wheel and a source tarball
       run: |
         python3 updateVersion.py --nextVersion ${{ github.event.release.tag_name }}
-        python3 setup.py sdist bdist_wheel --python-tag ${{ steps.python-tag.outputs.replaced }}
         python3 -m build
     - name: Store the distribution packages
       uses: actions/upload-artifact@v4
