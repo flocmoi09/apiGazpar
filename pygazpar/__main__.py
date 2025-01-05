@@ -1,18 +1,19 @@
 import argparse
-import sys
 import json
 import traceback
 import os
 import logging
-import pygazpar
-
-
-def main():
+import asyncio
+from .version import __version__
+from .enum import Frequency
+from .client import Client
+from .datasource import JsonWebDataSource, ExcelWebDataSource, TestDataSource, ExcelFileDataSource
+async def main():
     """Main function"""
     parser = argparse.ArgumentParser()
     parser.add_argument("-v", "--version",
                         action="version",
-                        version=f"PyGazpar {pygazpar.__version__}")
+                        version=f"PyGazpar {__version__}")
     parser.add_argument("-u", "--username",
                         required=True,
                         help="GRDF username (email)")
@@ -26,9 +27,12 @@ def main():
                         required=False,
                         default="/tmp",
                         help="tmp directory (default is /tmp)")
+    parser.add_argument("-ex", "--excelfile",
+                        required=False,
+                        help="Excel file path")
     parser.add_argument("-f", "--frequency",
                         required=False,
-                        type=lambda frequency: pygazpar.Frequency[frequency], choices=list(pygazpar.Frequency),
+                        type=lambda frequency: Frequency[frequency], choices=list(Frequency),
                         default="DAILY",
                         help="Meter reading frequency (DAILY, WEEKLY, MONTHLY, YEARLY)")
     parser.add_argument("-d", "--lastNDays",
@@ -39,7 +43,7 @@ def main():
     parser.add_argument("--datasource",
                         required=False,
                         default="json",
-                        help="Datasource: json | excel | test")
+                        help="Datasource: json | excel | excelweb | test")
 
     args = parser.parse_args()
 
@@ -55,24 +59,26 @@ def main():
     # Setup logging.
     logging.basicConfig(filename=f"{pygazparLogFile}", level=logging.DEBUG, format="%(asctime)s %(levelname)s [%(name)s] %(message)s")
 
-    logging.info(f"PyGazpar {pygazpar.__version__}")
+    logging.info(f"PyGazpar {__version__}")
     logging.info(f"--tmpdir {args.tmpdir}")
+    logging.info(f"--excelfile {args.excelfile}")
     logging.info(f"--frequency {args.frequency}")
     logging.info(f"--lastNDays {args.lastNDays}")
     logging.info(f"--datasource {bool(args.datasource)}")
-
     if args.datasource == "json":
-        client = pygazpar.Client(pygazpar.JsonWebDataSource(args.username, args.password))
+        client = Client(JsonWebDataSource(args.username, args.password))
+    elif args.datasource == "excelweb":
+        client = Client(ExcelWebDataSource(args.username, args.password, args.tmpdir))
     elif args.datasource == "excel":
-        client = pygazpar.Client(pygazpar.ExcelWebDataSource(args.username, args.password, args.tmpdir))
+        client = Client(ExcelFileDataSource(args.excelfile))
     elif args.datasource == "test":
-        client = pygazpar.Client(pygazpar.TestDataSource())
+        client = Client(TestDataSource())
     else:
-        raise Exception("Invalid datasource: (json | excel | test) is expected")
+        raise Exception("Invalid datasource: (json | excel | excelweb | test) is expected")
 
     try:
-        data = client.loadSince(args.pce, int(args.lastNDays), [args.frequency])
-    except BaseException:
+        data = await client.loadSince(args.pce, int(args.lastNDays), [args.frequency])
+    except BaseException as e:
         print('An error occured while querying PyGazpar library : %s', traceback.format_exc())
         return 1
 
@@ -80,4 +86,5 @@ def main():
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+    ##sys.exit(main())
+    asyncio.run(main())
