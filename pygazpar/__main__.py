@@ -77,7 +77,7 @@ async def main():
         raise Exception("Invalid datasource: (json | excel | excelweb | test) is expected")
 
     try:
-        data = await client.loadSince(args.pce, int(args.lastNDays), [args.frequency])
+        data = await client.load_since(args.pce, int(args.lastNDays), [args.frequency])
     except BaseException:
         print('An error occured while querying PyGazpar library : %s', traceback.format_exc())
         return 1

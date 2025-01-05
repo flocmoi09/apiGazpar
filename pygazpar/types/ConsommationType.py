@@ -11,7 +11,7 @@ class RelevesType:
                 indexFin:int,
                 volumeBrutConsomme:float,
                 energieConsomme:float,
-                natureReleve:NatureReleve|str,
+                natureReleve:str|NatureReleve,
                 qualificationReleve:QualificationReleve|str,
                 journeeGaziere:str| None=None,
                 pcs:str|int|float|None=None,
@@ -43,7 +43,7 @@ class RelevesType:
         if(status is None):
             self.status = None
         else:   
-            self.status =  StatusReleve(status)      
+            self.status =  StatusReleve(status)
         self.coeffConversion = coeffConversion
         self.frequenceReleve = frequenceReleve
         self.temperature = temperature
