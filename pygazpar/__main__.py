@@ -4,10 +4,11 @@ import traceback
 import os
 import logging
 import asyncio
-from .version import __version__
-from .enum import Frequency
-from .client import Client
-from .datasource import JsonWebDataSource, ExcelWebDataSource, TestDataSource, ExcelFileDataSource
+from pygazpar.enum import Frequency
+from pygazpar.client import Client
+from pygazpar.datasource import JsonWebDataSource, ExcelWebDataSource, TestDataSource, ExcelFileDataSource
+from pygazpar.version import __version__  # noqa: F401
+
 async def main():
     """Main function"""
     parser = argparse.ArgumentParser()
