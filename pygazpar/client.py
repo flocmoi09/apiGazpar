@@ -16,6 +16,14 @@ class Client:
     def __init__(self, datasource: IDataSource):
         self.__datasource = datasource
 
+    async def async_login(self):
+        '''Try to log in'''
+        try:
+            res = await self.__datasource.login()
+        except Exception:
+            Logger.error("An unexpected error occured while loading the data", exc_info=True)
+            raise
+        return res
     # ------------------------------------------------------
     async def load_since(self, pce_identifier: str, last_n_days: int = DEFAULT_LAST_N_DAYS,
                         frequencies: Optional[List[Frequency]] = None) -> MeterReadingsByFrequency:
@@ -42,4 +50,12 @@ class Client:
             Logger.error("An unexpected error occured while loading the data", exc_info=True)
             raise
 
+        return res
+    async def load_list_pce(self):
+        '''Load data since last N days'''
+        try:
+            res = await self.__datasource.list_pce()
+        except Exception:
+            Logger.error("An unexpected error occured while loading the data", exc_info=True)
+            raise
         return res

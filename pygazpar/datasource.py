@@ -15,7 +15,7 @@ from pygazpar.auth import GazparAuth
 from pygazpar.consommation import GazparConsommation
 from pygazpar.pce import GazparPCE
 from pygazpar.frequency import FrequencyConverter
-
+from pygazpar.types.PceType import PceType
 Logger = logging.getLogger(__name__)
 
 MeterReading = Dict[str, Any]
@@ -32,6 +32,15 @@ class IDataSource(ABC):
     async def load(self, pce_identifier: str, start_date: date, end_date: date, frequencies: Optional[List[Frequency]] = None) -> MeterReadingsByFrequency:
         '''Load data conso from source'''
         pass
+    @abstractmethod
+    async def login(self) -> str:
+        '''Login from source'''
+        pass
+
+    @abstractmethod
+    async def list_pce(self) -> List[PceType]:
+        '''List PCE from source'''
+        pass
 
 
 # ------------------------------------------------------------------------------------------------------------
@@ -47,7 +56,11 @@ class WebDataSource(IDataSource):
         self._conso=GazparConsommation(session)
         self._auth=GazparAuth(username, password,session)
         self._auth_token=None
-
+    async def login(self) -> str:
+         self._auth_token=await self._auth.request_token()
+         return self._auth_token
+    async def list_pce(self) -> List[PceType]:
+         return await self._pce.get_list_pce()
     # ------------------------------------------------------
     async def load(self, pce_identifier: str, start_date: date, end_date: date, frequencies: Optional[List[Frequency]] = None) -> MeterReadingsByFrequency:
 
@@ -92,7 +105,7 @@ class ExcelWebDataSource(WebDataSource):
         super().__init__(username, password,session)
         
         self.__tmp_directory = tmpDirectory
-
+    
     # ------------------------------------------------------
     async def _load_from_session(self, pce_identifier: str, start_date: date, end_date: date, frequencies: Optional[List[Frequency]] = None) -> MeterReadingsByFrequency:
 
@@ -168,7 +181,11 @@ class ExcelFileDataSource(IDataSource):
     def __init__(self, excel_file: str):
 
         self.__excel_file = excel_file
-
+    async def login(self) -> str:
+         pass
+    async def list_pce(self) -> List[PceType]:
+        '''List PCE from source'''
+        pass
     async def load(self, pce_identifier: str, start_date: date,
                    end_date: date, frequencies: Optional[List[Frequency]] = None) -> MeterReadingsByFrequency:
 
@@ -264,7 +281,11 @@ class JsonFileDataSource(IDataSource):
 
         self.__consumption_json_file = consumption_json_file
         self.__temperature_json_file = temperature_json_file
-
+    async def login(self) -> str:
+         pass
+    async def list_pce(self) -> List[PceType]:
+        '''List PCE from source'''
+        pass
     async def load(self, pce_identifier: str, start_date: date, end_date: date,
                    frequencies: Optional[List[Frequency]] = None) -> MeterReadingsByFrequency:
 
@@ -299,9 +320,12 @@ class JsonFileDataSource(IDataSource):
 class TestDataSource(IDataSource):
     '''Base class for the Test data'''
     def __init__(self):
-
         pass
-
+    async def login(self) -> str:
+         pass
+    async def list_pce(self) -> List[PceType]:
+        '''List PCE from source'''
+        pass
     async def load(self, pce_identifier: str, start_date: date, end_date: date,
                    frequencies: Optional[List[Frequency]] = None) -> MeterReadingsByFrequency:
 

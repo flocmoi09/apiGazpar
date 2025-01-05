@@ -20,7 +20,7 @@ class RelevesType:
                 status:StatusReleve|str|None=None,
                 coeffConversion:float|None=None,
                 frequenceReleve:str|None=None,
-                temperature:str|float|None=None,
+                temperature:str|float=None,
                 frequence:str|None=None):
         self.dateDebutReleve = dateDebutReleve
         self.dateFinReleve = dateFinReleve
