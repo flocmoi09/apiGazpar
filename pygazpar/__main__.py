@@ -78,7 +78,7 @@ async def main():
 
     try:
         data = await client.loadSince(args.pce, int(args.lastNDays), [args.frequency])
-    except BaseException as e:
+    except BaseException:
         print('An error occured while querying PyGazpar library : %s', traceback.format_exc())
         return 1
 
@@ -86,5 +86,4 @@ async def main():
 
 
 if __name__ == '__main__':
-    ##sys.exit(main())
     asyncio.run(main())
