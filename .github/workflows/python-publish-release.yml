@@ -20,7 +20,8 @@ jobs:
     - name: Install pypa/build
       run: >-
         python3 -m
-        pip install
+        pip install -r requirements.txt
+        pip install wheel pytest-cov setuptools wheel twine
         build
         --user
     - name: Wheel Python Tag creation
