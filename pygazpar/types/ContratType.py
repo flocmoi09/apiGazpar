@@ -1,6 +1,6 @@
 
-class contrat_pce:
-    """Contract class.
+class ContratPce:
+    """Contract class from API.
 
         Class represent a contract
 

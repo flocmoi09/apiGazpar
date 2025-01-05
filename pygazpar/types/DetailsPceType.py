@@ -1,7 +1,8 @@
 
-from .contrat_type import contrat_pce
+from pygazpar.types.ContratType import ContratPce
 
-class technique_pce:
+class TechniquePce:
+    """Class representing a Technical PCE  from API"""
     def __init__(self, 
                  calibre:str|None, 
                  numeroMatricule:str,
@@ -70,20 +71,21 @@ class technique_pce:
         self.codeNatureGaz = codeNatureGaz
         self.libelleNatureGaz = libelleNatureGaz
 
-class details_pce:
+class DetailsPce:
+    """Class representing a PCE details from API"""
     def __init__(self, 
-                 technique:technique_pce, 
-                 contrat:contrat_pce,
+                 technique:TechniquePce, 
+                 contrat:ContratPce,
                  statutRestitutionTechnique:str|None,
                  statutRestitutionContrat:str|None,
                  
                  ):
-        if not isinstance(technique, technique_pce) and isinstance(technique, dict):
-            self.technique=technique_pce(**technique)
+        if not isinstance(technique, TechniquePce) and isinstance(technique, dict):
+            self.technique=TechniquePce(**technique)
         else:
             self.technique = technique
-        if not isinstance(contrat, contrat_pce) and isinstance(contrat, dict):
-            self.contrat=contrat_pce(**contrat)
+        if not isinstance(contrat, ContratPce) and isinstance(contrat, dict):
+            self.contrat=ContratPce(**contrat)
         else:
             self.contrat = contrat
         self.statutRestitutionTechnique = statutRestitutionTechnique

@@ -1,18 +1,16 @@
+from typing import  List, Dict
 import logging
 from datetime import datetime, time,timedelta
 import pytz
 import dateparser
-from pygazpar.enum import Frequency,PropertyName
 from openpyxl.worksheet.worksheet import Worksheet
 from openpyxl.cell.cell import Cell
 from openpyxl import load_workbook
-from typing import  List, Dict
-from pygazpar.enum import NatureReleve, QualificationReleve, StatusReleve
-from pygazpar.types.releves_result_type import Releves_result_type
-from pygazpar.types.consommation_type import Releves_type
 from dateutil.parser import parse
 from dateutil.relativedelta import relativedelta
-
+from pygazpar.enum import NatureReleve, QualificationReleve, StatusReleve,Frequency,PropertyName
+from pygazpar.types.RelevesResultType import RelevesResultType
+from pygazpar.types.ConsommationType import RelevesType
 FIRST_DATA_LINE_NUMBER = 10
 
 Logger = logging.getLogger(__name__)
@@ -26,7 +24,7 @@ class ExcelParser:
     INPUT_DATE_FORMAT = "%d/%m/%Y"
     # ------------------------------------------------------
     @staticmethod
-    def parse(dataFilename: str, dataReadingFrequency: Frequency) -> List[Releves_result_type]:
+    def parse(dataFilename: str, dataReadingFrequency: Frequency) -> List[RelevesResultType]:
 
         parseByFrequency = {
             Frequency.HOURLY: ExcelParser.__parseHourly,
@@ -65,12 +63,12 @@ class ExcelParser:
 
     # ------------------------------------------------------
     @staticmethod
-    def __parseHourly(worksheet: Worksheet) -> List[Releves_result_type]:
+    def __parseHourly(worksheet: Worksheet) -> List[RelevesResultType]:
         return []
 
     # ------------------------------------------------------
     @staticmethod
-    def __parseDaily(worksheet: Worksheet) -> List[Releves_result_type]:
+    def __parseDaily(worksheet: Worksheet) -> List[RelevesResultType]:
 
         res = []
        
@@ -104,8 +102,8 @@ class ExcelParser:
                 row[PropertyName.NATURE.value]=NatureReleve.INFORMATIVES.value
                 row[PropertyName.STATUS.value]=StatusReleve.PROVISOIRE.value
                 row[PropertyName.FREQUENCE_RELEVE.value]=None
-                releve = Releves_type(**row)
-                releve_result = Releves_result_type(worksheet.cell(column=2, row=rownum).value,data_timestamp,releve)
+                releve = RelevesType(**row)
+                releve_result = RelevesResultType(worksheet.cell(column=2, row=rownum).value,data_timestamp,releve)
 
                 res.append(releve_result)
 
@@ -115,7 +113,7 @@ class ExcelParser:
 
     # ------------------------------------------------------
     @staticmethod
-    def __parseWeekly(worksheet: Worksheet) -> List[Releves_result_type]:
+    def __parseWeekly(worksheet: Worksheet) -> List[RelevesResultType]:
 
         res = []
 
@@ -156,8 +154,8 @@ class ExcelParser:
                 row[PropertyName.NATURE.value]=NatureReleve.INFORMATIVES.value
                 row[PropertyName.STATUS.value]=StatusReleve.PROVISOIRE.value
                 row[PropertyName.FREQUENCE_RELEVE.value]=None
-                releve = Releves_type(**row)
-                releve_result = Releves_result_type(worksheet.cell(column=2, row=rownum).value,data_timestamp,releve)
+                releve = RelevesType(**row)
+                releve_result = RelevesResultType(worksheet.cell(column=2, row=rownum).value,data_timestamp,releve)
                 res.append(releve_result)
 
         Logger.debug(f"Weekly data read successfully between row #{minRowNum} and row #{maxRowNum}")
@@ -166,7 +164,7 @@ class ExcelParser:
 
     # ------------------------------------------------------
     @staticmethod
-    def __parseMonthly(worksheet: Worksheet) -> List[Releves_result_type]:
+    def __parseMonthly(worksheet: Worksheet) -> List[RelevesResultType]:
 
         res = []
 
@@ -204,8 +202,8 @@ class ExcelParser:
                 row[PropertyName.STATUS.value]=StatusReleve.PROVISOIRE.value
                 row[PropertyName.FREQUENCE_RELEVE.value]=None
                 
-                releve = Releves_type(**row)
-                releve_result = Releves_result_type(worksheet.cell(column=2, row=rownum).value,data_timestamp,releve)
+                releve = RelevesType(**row)
+                releve_result = RelevesResultType(worksheet.cell(column=2, row=rownum).value,data_timestamp,releve)
                 res.append(releve_result)
 
         Logger.debug(f"Monthly data read successfully between row #{minRowNum} and row #{maxRowNum}")

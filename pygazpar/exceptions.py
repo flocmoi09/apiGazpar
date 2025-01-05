@@ -1,4 +1,3 @@
-
 class ClientError(Exception):
     """Exception to indicate a general API error."""
 

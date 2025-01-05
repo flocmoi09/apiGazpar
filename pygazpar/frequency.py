@@ -1,9 +1,7 @@
-import pandas as pd
-import json
-from datetime import datetime
 from typing import List, Dict, Any, cast
-from pygazpar.types.releves_result_type import Releves_result_type
-from pygazpar.enum import NatureReleve, QualificationReleve, StatusReleve
+import pandas as pd
+from pygazpar.types.RelevesResultType import RelevesResultType
+from pygazpar.enum import NatureReleve, QualificationReleve
 
 # ------------------------------------------------------------------------------------------------------------
 class FrequencyConverter:
@@ -40,7 +38,7 @@ class FrequencyConverter:
 
     # ------------------------------------------------------
     @staticmethod
-    def computeWeekly(daily: List[Releves_result_type]) -> List[Releves_result_type]:
+    def computeWeekly(daily: List[RelevesResultType]) -> List[RelevesResultType]:
 
         convertDaily = [ob.__dict__ for ob in daily]
         df = pd.DataFrame(convertDaily)
@@ -81,7 +79,7 @@ class FrequencyConverter:
         # Select target columns.
         df = df[["time_period","dateDebutReleve","dateFinReleve", "indexDebut", "indexFin", "volumeBrutConsomme", "energieConsomme","temperature", "timestamp"]]
         res = cast(List[Dict[str, Any]], df.to_dict('records'))
-        result = [Releves_result_type(**dict(item, **{'natureReleve':NatureReleve.INFORMATIVES.value,'qualificationReleve':QualificationReleve.ESTIME.value})) for item in res]
+        result = [RelevesResultType(**dict(item, **{'natureReleve':NatureReleve.INFORMATIVES.value,'qualificationReleve':QualificationReleve.ESTIME.value})) for item in res]
 
         return result
     @staticmethod
@@ -89,7 +87,7 @@ class FrequencyConverter:
         return pd.Timestamp(x).isoformat()
     # ------------------------------------------------------
     @staticmethod
-    def computeMonthly(daily: List[Releves_result_type]) -> List[Releves_result_type]:
+    def computeMonthly(daily: List[RelevesResultType]) -> List[RelevesResultType]:
 
         convertDaily = [ob.__dict__ for ob in daily]
         df = pd.DataFrame(convertDaily)
@@ -126,13 +124,13 @@ class FrequencyConverter:
         df['dateDebutReleve']=df['dateDebutReleve'].apply(FrequencyConverter.convertDateTimeIsoString)
         df['dateFinReleve']=df['dateFinReleve'].apply(FrequencyConverter.convertDateTimeIsoString)
         res = cast(List[Dict[str, Any]], df.to_dict('records'))
-        result = [Releves_result_type(**dict(item, **{'natureReleve':NatureReleve.INFORMATIVES.value,'qualificationReleve':QualificationReleve.ESTIME.value})) for item in res]
+        result = [RelevesResultType(**dict(item, **{'natureReleve':NatureReleve.INFORMATIVES.value,'qualificationReleve':QualificationReleve.ESTIME.value})) for item in res]
 
         return result
 
     # ------------------------------------------------------
     @staticmethod
-    def computeYearly(daily: List[Releves_result_type]) -> List[Releves_result_type]:
+    def computeYearly(daily: List[RelevesResultType]) -> List[RelevesResultType]:
 
         convertDaily = [ob.__dict__ for ob in daily]
         df = pd.DataFrame(convertDaily)
@@ -168,6 +166,6 @@ class FrequencyConverter:
         df['dateDebutReleve']=df['dateDebutReleve'].apply(FrequencyConverter.convertDateTimeIsoString)
         df['dateFinReleve']=df['dateFinReleve'].apply(FrequencyConverter.convertDateTimeIsoString)
         res = cast(List[Dict[str, Any]], df.to_dict('records'))
-        result = [Releves_result_type(**dict(item, **{'natureReleve':NatureReleve.INFORMATIVES.value,'qualificationReleve':QualificationReleve.ESTIME.value})) for item in res]
+        result = [RelevesResultType(**dict(item, **{'natureReleve':NatureReleve.INFORMATIVES.value,'qualificationReleve':QualificationReleve.ESTIME.value})) for item in res]
 
         return result

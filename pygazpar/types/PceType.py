@@ -1,6 +1,7 @@
-from .details_pce_type import details_pce
-from .contrat_type import contrat_pce
-class pce_type:
+from pygazpar.types.DetailsPceType import DetailsPce
+from pygazpar.types.ContratType import ContratPce
+class PceType:
+    """Class representing a PCE from API"""
     def __init__(self, 
                 idObject:str, 
                 typeObject:str|None,
@@ -34,7 +35,7 @@ class pce_type:
                 parcours: str|None,
                 statutControlePreuves:str|None,
                 dateLimitePreuves:str|None,
-                details:details_pce|None,
+                details:DetailsPce|None,
                 dateDerniereVerification:str,
                 frequenceJJ:bool = None,
                 frequence1:bool =None,
@@ -43,7 +44,7 @@ class pce_type:
                 frequenceMMOrJJ:bool =None,
                 numeroSerie:str =None,
                 numeroMatricule:str =None,
-                contrat:contrat_pce=None,
+                contrat:ContratPce=None,
                 fullAddress:str=None,
                 **kwargs
                  ):
@@ -79,8 +80,8 @@ class pce_type:
         self.etat = etat
         self.datePremiereAccreditation = datePremiereAccreditation
         self.nomTitulaire = nomTitulaire
-        if not isinstance(details, details_pce) and isinstance(details, dict):
-            self.details=details_pce(**details)
+        if not isinstance(details, DetailsPce) and isinstance(details, dict):
+            self.details=DetailsPce(**details)
         else:
             self.details = details
       
@@ -92,8 +93,8 @@ class pce_type:
         self.frequenceMMOrJJ = frequenceMMOrJJ
         self.numeroSerie = numeroSerie
         self.numeroMatricule = numeroMatricule
-        if not isinstance(contrat, contrat_pce) and isinstance(contrat, dict):
-            self.contrat=contrat_pce(**contrat)
+        if not isinstance(contrat, ContratPce) and isinstance(contrat, dict):
+            self.contrat=ContratPce(**contrat)
         else:
             self.contrat = contrat
         

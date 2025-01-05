@@ -1,6 +1,6 @@
+from typing import Any
 import aiohttp
 import async_timeout
-from typing import Any
 import socket
 from .exceptions import ClientAuthenticationError, ClientCommunicationError,ClientError
 

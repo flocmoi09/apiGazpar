@@ -3,9 +3,10 @@ from __future__ import annotations
 import logging
 import aiohttp
 from .helpers import _api_wrapper
-from pygazpar.types.consommation_type import Consommation_type
+from pygazpar.types.ConsommationType import ConsommationType
 from pygazpar.enum import ConsommationRole,Frequency
 from .exceptions import ClientError
+from typing import  Dict, Any
 
 BASE_URL="https://monespace.grdf.fr/api/e-conso/pce/consommation/"
 
@@ -14,7 +15,7 @@ class  GazparConsommation:
     def __init__(self, session: aiohttp.ClientSession):
         self._session = session
     
-    async def get_consommation(self,pce:str,dateDebut:str,dateFin:str,type:ConsommationRole) -> Consommation_type:
+    async def get_consommation(self,pce:str,dateDebut:str,dateFin:str,type:ConsommationRole) -> ConsommationType:
         response=await _api_wrapper(
         session=self._session,
         method="get",
@@ -26,9 +27,9 @@ class  GazparConsommation:
              responseJSON=await response.json()
         else:  
              raise ClientError("Invalid response from server")
-        return Consommation_type(**responseJSON[pce])
+        return ConsommationType(**responseJSON[pce])
 
-    async def get_consommation_file(self,pce:str,dateDebut:str,dateFin:str,type:ConsommationRole,frequency:Frequency) -> Consommation_type:
+    async def get_consommation_file(self,pce:str,dateDebut:str,dateFin:str,type:ConsommationRole,frequency:Frequency) -> Dict[str, Any]:
          # We remove an eventual existing data file (from a previous run that has not deleted it).
         
         response=await _api_wrapper(

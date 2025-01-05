@@ -1,8 +1,9 @@
-from pygazpar.enum import NatureReleve, QualificationReleve, StatusReleve
 from typing import List
+from pygazpar.enum import NatureReleve, QualificationReleve, StatusReleve
 
 
-class Releves_type:
+class RelevesType:
+    """Class representing a Releves from API"""
     def __init__(self,
                 dateDebutReleve:str,
                 dateFinReleve:str,
@@ -48,16 +49,17 @@ class Releves_type:
         self.temperature = temperature
         self.frequence = frequence
 
-class Consommation_type:
+class ConsommationType:
+    """Class representing a Result consommation send by the API"""
     def __init__(self,
                  idPce:str,
-                 releves:List[Releves_type],
+                 releves:List[RelevesType],
                  frequence:str|None):
         self.idPce = idPce
         relevesArray=[]
         for element in releves:
-            if not isinstance(element, Releves_type):
-                relevesArray.append(Releves_type(**element))
+            if not isinstance(element, RelevesType):
+                relevesArray.append(RelevesType(**element))
             else:
                 relevesArray.append(element)
         self.releves = relevesArray

@@ -1,4 +1,5 @@
-class Consommation_reference:
+class ConsommationReference:
+    """Class representing a reference consommation from API"""
     def __init__(self,
                  id:int,
                  consommationType:str,

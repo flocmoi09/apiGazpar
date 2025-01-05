@@ -1,13 +1,14 @@
-from pygazpar.types.consommation_type import Releves_type
+import json
+from pygazpar.types.ConsommationType import RelevesType
 from pygazpar.enum import NatureReleve, QualificationReleve, StatusReleve
 
-import json
 
-class Releves_result_type(Releves_type):
+class RelevesResultType(RelevesType):
+    """Class representing a result consommation"""
     def __init__(self,
                 time_period:str,
                 timestamp:str,
-                releves:Releves_type|None=None,
+                releves:RelevesType|None=None,
                 temperature:str|float|None=None,
                 dateDebutReleve:str|None=None,
                 dateFinReleve:str|None=None,

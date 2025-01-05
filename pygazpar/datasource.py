@@ -1,12 +1,12 @@
+from typing import Any, List, Dict, cast, Optional
 import logging
 import glob
 import os
 import json
 import time
+from datetime import date, timedelta
 from abc import ABC, abstractmethod
 import aiohttp
-from typing import Any, List, Dict, cast, Optional
-from datetime import date, timedelta
 from pygazpar.enum import Frequency, PropertyName,ConsommationRole
 from pygazpar.excelparser import ExcelParser
 from pygazpar.jsonparser import JsonParser
@@ -125,7 +125,7 @@ class ExcelWebDataSource(WebDataSource):
 
 
                 try:
-                    response = self._conso.get_consommation_file(pceIdentifier,startDate.strftime(ExcelWebDataSource.DATE_FORMAT),endDate.strftime(ExcelWebDataSource.DATE_FORMAT),ConsommationRole.INFORMATIVES,frequency)
+                    response = await self._conso.get_consommation_file(pceIdentifier,startDate.strftime(ExcelWebDataSource.DATE_FORMAT),endDate.strftime(ExcelWebDataSource.DATE_FORMAT),ConsommationRole.INFORMATIVES,frequency)
                     open(f"{self.__tmpDirectory}/{response.filename}", "wb").write(response.content)
 
                     break
