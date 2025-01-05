@@ -1,3 +1,4 @@
+"""Support for Exception custom."""
 class ClientError(Exception):
     """Exception to indicate a general API error."""
 

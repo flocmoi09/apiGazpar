@@ -1,3 +1,4 @@
+"""Support for Json parser."""
 import json
 import logging
 from typing import Any, List, Dict
@@ -15,10 +16,12 @@ Logger = logging.getLogger(__name__)
 
 # ------------------------------------------------------------------------------------------------------------
 class JsonParser:
+    """ Class Json parser."""
 
     # ------------------------------------------------------
     @staticmethod
-    def parseResult(data: ConsommationType, temperatures: Dict[str, Any], pceIdentifier: str) -> List[RelevesResultType]:
+    def parse_result(data: ConsommationType, temperatures: Dict[str, Any], pce_identifier: str) -> List[RelevesResultType]:
+        """ parse Json to result."""
 
         res = []
 
@@ -31,7 +34,8 @@ class JsonParser:
             temperature = releve.temperature
             if temperature is None and temperatures is not None and len(temperatures) > 0:
                 temperature = temperatures.get(releve.journeeGaziere)
-            item = RelevesResultType(datetime.strftime(datetime.strptime(releve.journeeGaziere, INPUT_DATE_FORMAT), OUTPUT_DATE_FORMAT),data_timestamp,releve,temperature)
+            item = RelevesResultType(datetime.strftime(datetime.strptime(releve.journeeGaziere, INPUT_DATE_FORMAT),
+                                                       OUTPUT_DATE_FORMAT),data_timestamp,releve,temperature)
             res.append(item)
 
         Logger.debug("Daily data read successfully from Json")
@@ -39,22 +43,24 @@ class JsonParser:
         return res
  # ------------------------------------------------------
     @staticmethod
-    def parse(jsonStr: str, temperaturesStr: str, pceIdentifier: str) -> List[Dict[str, Any]]:    
+    def parse(json_str: str, temperature_str: str, pce_identifier: str) -> List[Dict[str, Any]]:
+        """ parse Json to dictionnary."""
         res = []
-        data = json.loads(jsonStr)
+        data = json.loads(json_str)
 
-        temperatures = json.loads(temperaturesStr)
+        temperatures = json.loads(temperature_str)
 
         # Timestamp of the data.
         data_timestamp = datetime.now().isoformat()
 
-        for releve in data[pceIdentifier]['releves']:
+        for releve in data[pce_identifier]['releves']:
             temperature = releve['temperature']
             if temperature is None and temperatures is not None and len(temperatures) > 0:
                 releve.temperature = temperatures.get(releve['journeeGaziere'])
 
             item = {}
-            item[PropertyName.TIME_PERIOD.value] = datetime.strftime(datetime.strptime(releve['journeeGaziere'], INPUT_DATE_FORMAT), OUTPUT_DATE_FORMAT)
+            item[PropertyName.TIME_PERIOD.value] = datetime.strftime(
+                datetime.strptime(releve['journeeGaziere'], INPUT_DATE_FORMAT),OUTPUT_DATE_FORMAT)
             item[PropertyName.START_INDEX.value] = releve['indexDebut']
             item[PropertyName.END_INDEX.value] = releve['indexFin']
             item[PropertyName.VOLUME.value] = releve['volumeBrutConsomme']
@@ -67,5 +73,4 @@ class JsonParser:
             res.append(item)
 
         Logger.debug("Daily data read successfully from Json")
-
         return res

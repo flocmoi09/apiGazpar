@@ -1,3 +1,4 @@
+"""Support for Excel parser."""
 from typing import  List, Dict
 import logging
 from datetime import datetime, time,timedelta
@@ -18,28 +19,29 @@ Logger = logging.getLogger(__name__)
 
 # ------------------------------------------------------------------------------------------------------------
 class ExcelParser:
+    '''Excel parser for releve'''
     OUTPUT_DATE_FORMAT = "%Y-%m-%d"
     OUTPUT_DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
 
     INPUT_DATE_FORMAT = "%d/%m/%Y"
     # ------------------------------------------------------
     @staticmethod
-    def parse(dataFilename: str, dataReadingFrequency: Frequency) -> List[RelevesResultType]:
-
-        parseByFrequency = {
-            Frequency.HOURLY: ExcelParser.__parseHourly,
-            Frequency.DAILY: ExcelParser.__parseDaily,
-            Frequency.WEEKLY: ExcelParser.__parseWeekly,
-            Frequency.MONTHLY: ExcelParser.__parseMonthly
+    def parse(data_filename: str, data_reading_frequency: Frequency) -> List[RelevesResultType]:
+        '''Parse excel file'''
+        parse_by_frequency = {
+            Frequency.HOURLY: ExcelParser.__parse_hourly,
+            Frequency.DAILY: ExcelParser.__parse_daily,
+            Frequency.WEEKLY: ExcelParser.__parse_weekly,
+            Frequency.MONTHLY: ExcelParser.__parse_monthly
         }
 
-        Logger.debug(f"Loading Excel data file '{dataFilename}'...")
+        Logger.debug(f"Loading Excel data file '{data_filename}'...")
 
-        workbook = load_workbook(filename=dataFilename)
+        workbook = load_workbook(filename=data_filename)
 
         worksheet = workbook.active
 
-        res = parseByFrequency[dataReadingFrequency](worksheet)  # type: ignore
+        res = parse_by_frequency[data_reading_frequency](worksheet)  # type: ignore
 
         workbook.close()
 
@@ -47,31 +49,31 @@ class ExcelParser:
 
     # ------------------------------------------------------
     @staticmethod
-    def __fillRow(row: Dict, propertyName: str, cell: Cell, isNumber: bool):
-
+    def __fill_row(row: Dict, property_name: str, cell: Cell, is_number: bool):
+        '''fill row dictionnary with value from excel'''
         if cell.value is not None:
-            if isNumber:
-                if type(cell.value) is str:
+            if is_number:
+                if isinstance(cell.value,str):
                     if len(cell.value.strip()) > 0:
-                        row[propertyName] = float(cell.value.replace(',', '.'))
+                        row[property_name] = float(cell.value.replace(',', '.'))
                 else:
-                    row[propertyName] = cell.value
+                    row[property_name] = cell.value
             else:
-                row[propertyName] = cell.value.strip() if type(cell.value) is str else cell.value
+                row[property_name] = cell.value.strip() if isinstance(cell.value,str) else cell.value
         else:
-            row[propertyName] = None
+            row[property_name] = None
 
     # ------------------------------------------------------
     @staticmethod
-    def __parseHourly(worksheet: Worksheet) -> List[RelevesResultType]:
+    def __parse_hourly(worksheet: Worksheet) -> List[RelevesResultType]:
+        '''Parse hourly data'''
         return []
 
     # ------------------------------------------------------
     @staticmethod
-    def __parseDaily(worksheet: Worksheet) -> List[RelevesResultType]:
-
-        res = []
-       
+    def __parse_daily(worksheet: Worksheet) -> List[RelevesResultType]:
+        '''parse daily data'''
+        res = []       
         # Timestamp of the data.
         data_timestamp = datetime.now().isoformat()
 
@@ -89,13 +91,13 @@ class ExcelParser:
                 row[PropertyName.DATE_DEBUT.value]= datetime_debut_localize.isoformat()
                 row[PropertyName.DATE_FIN.value]= (datetime_debut_localize+timedelta(days=1)).isoformat()
 
-                ExcelParser.__fillRow(row, PropertyName.START_INDEX.value, worksheet.cell(column=3, row=rownum), True)  # type: ignore
-                ExcelParser.__fillRow(row, PropertyName.END_INDEX.value, worksheet.cell(column=4, row=rownum), True)  # type: ignore
-                ExcelParser.__fillRow(row, PropertyName.VOLUME.value, worksheet.cell(column=5, row=rownum), True)  # type: ignore
-                ExcelParser.__fillRow(row, PropertyName.ENERGY.value, worksheet.cell(column=6, row=rownum), True)  # type: ignore
-                ExcelParser.__fillRow(row, PropertyName.CONVERTER_FACTOR.value, worksheet.cell(column=7, row=rownum), True)  # type: ignore
-                ExcelParser.__fillRow(row, PropertyName.TEMPERATURE.value, worksheet.cell(column=8, row=rownum), True)  # type: ignore
-                ExcelParser.__fillRow(row, PropertyName.QUALIFICATION.value, worksheet.cell(column=9, row=rownum), False)  # type: ignore
+                ExcelParser.__fill_row(row, PropertyName.START_INDEX.value, worksheet.cell(column=3, row=rownum), True)  # type: ignore
+                ExcelParser.__fill_row(row, PropertyName.END_INDEX.value, worksheet.cell(column=4, row=rownum), True)  # type: ignore
+                ExcelParser.__fill_row(row, PropertyName.VOLUME.value, worksheet.cell(column=5, row=rownum), True)  # type: ignore
+                ExcelParser.__fill_row(row, PropertyName.ENERGY.value, worksheet.cell(column=6, row=rownum), True)  # type: ignore
+                ExcelParser.__fill_row(row, PropertyName.CONVERTER_FACTOR.value, worksheet.cell(column=7, row=rownum), True)  # type: ignore
+                ExcelParser.__fill_row(row, PropertyName.TEMPERATURE.value, worksheet.cell(column=8, row=rownum), True)  # type: ignore
+                ExcelParser.__fill_row(row, PropertyName.QUALIFICATION.value, worksheet.cell(column=9, row=rownum), False)  # type: ignore
                 row[PropertyName.PCS.value]=None
                 row[PropertyName.VOLUME_CONVERTI.value]=round(row[PropertyName.VOLUME.value])
                 row[PropertyName.PTA.value]=None
@@ -113,17 +115,17 @@ class ExcelParser:
 
     # ------------------------------------------------------
     @staticmethod
-    def __parseWeekly(worksheet: Worksheet) -> List[RelevesResultType]:
-
+    def __parse_weekly(worksheet: Worksheet) -> List[RelevesResultType]:
+        '''parse weekly data'''
         res = []
 
         # Timestamp of the data.
         data_timestamp = datetime.now().isoformat()
         info=pytz.timezone('Europe/Paris')
-        MyTime = time(6, 0, 0)  #hr/min/sec
-        minRowNum = FIRST_DATA_LINE_NUMBER
-        maxRowNum = len(worksheet['B'])
-        for rownum in range(minRowNum, maxRowNum + 1):
+        my_time = time(6, 0, 0)  #hr/min/sec
+        min_row_num = FIRST_DATA_LINE_NUMBER
+        max_row_num = len(worksheet['B'])
+        for rownum in range(min_row_num, max_row_num + 1):
             row = {}
             if worksheet.cell(column=2, row=rownum).value is not None:
                 dateField=worksheet.cell(column=2, row=rownum).value
@@ -131,17 +133,17 @@ class ExcelParser:
                 dateEnd=dateField.split('au')[1]
                 dateStartDT=parse(dateStart, fuzzy_with_tokens=True)
                 dateEndDT=parse(dateEnd, fuzzy_with_tokens=True)
-                dateStartDT = datetime.combine(dateStartDT[0], MyTime)
-                dateEndDT = datetime.combine(dateEndDT[0], MyTime)
+                dateStartDT = datetime.combine(dateStartDT[0], my_time)
+                dateEndDT = datetime.combine(dateEndDT[0], my_time)
                 dateStartDT=info.localize(dateStartDT)
                 dateEndDT=info.localize(dateEndDT)
 
                 row[PropertyName.DATE_DEBUT.value]= dateStartDT.isoformat()
                 row[PropertyName.DATE_FIN.value]= (dateEndDT+timedelta(days=1)).isoformat()
                 row[PropertyName.JOURNEE_GAZIERE.value] =None
-                ExcelParser.__fillRow(row, PropertyName.VOLUME.value, worksheet.cell(column=3, row=rownum), True)  # type: ignore
-                ExcelParser.__fillRow(row, PropertyName.ENERGY.value, worksheet.cell(column=4, row=rownum), True)  # type: ignore
-                ExcelParser.__fillRow(row, PropertyName.TEMPERATURE.value, worksheet.cell(column=5, row=rownum), True)  # type: ignore
+                ExcelParser.__fill_row(row, PropertyName.VOLUME.value, worksheet.cell(column=3, row=rownum), True)  # type: ignore
+                ExcelParser.__fill_row(row, PropertyName.ENERGY.value, worksheet.cell(column=4, row=rownum), True)  # type: ignore
+                ExcelParser.__fill_row(row, PropertyName.TEMPERATURE.value, worksheet.cell(column=5, row=rownum), True)  # type: ignore
 
                 row[PropertyName.START_INDEX.value]=None
                 row[PropertyName.END_INDEX.value]=None
@@ -158,14 +160,14 @@ class ExcelParser:
                 releve_result = RelevesResultType(worksheet.cell(column=2, row=rownum).value,data_timestamp,releve)
                 res.append(releve_result)
 
-        Logger.debug(f"Weekly data read successfully between row #{minRowNum} and row #{maxRowNum}")
+        Logger.debug(f"Weekly data read successfully between row #{min_row_num} and row #{max_row_num}")
 
         return res
 
     # ------------------------------------------------------
     @staticmethod
-    def __parseMonthly(worksheet: Worksheet) -> List[RelevesResultType]:
-
+    def __parse_monthly(worksheet: Worksheet) -> List[RelevesResultType]:
+        '''parse Monthly data'''
         res = []
 
         # Timestamp of the data.
@@ -187,9 +189,9 @@ class ExcelParser:
                 row[PropertyName.DATE_FIN.value]= (dateStartDT+relativedelta(months=1)).isoformat()
                 row[PropertyName.JOURNEE_GAZIERE.value] =None
 
-                ExcelParser.__fillRow(row, PropertyName.VOLUME.value, worksheet.cell(column=3, row=rownum), True)  # type: ignore
-                ExcelParser.__fillRow(row, PropertyName.ENERGY.value, worksheet.cell(column=4, row=rownum), True)  # type: ignore
-                ExcelParser.__fillRow(row, PropertyName.TEMPERATURE.value, worksheet.cell(column=5, row=rownum), True)  # type: ignore
+                ExcelParser.__fill_row(row, PropertyName.VOLUME.value, worksheet.cell(column=3, row=rownum), True)  # type: ignore
+                ExcelParser.__fill_row(row, PropertyName.ENERGY.value, worksheet.cell(column=4, row=rownum), True)  # type: ignore
+                ExcelParser.__fill_row(row, PropertyName.TEMPERATURE.value, worksheet.cell(column=5, row=rownum), True)  # type: ignore
 
                 row[PropertyName.START_INDEX.value]=None
                 row[PropertyName.END_INDEX.value]=None

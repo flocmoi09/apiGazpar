@@ -13,7 +13,7 @@ class RelevesType:
                 energieConsomme:float,
                 natureReleve:NatureReleve|str,
                 qualificationReleve:QualificationReleve|str,
-                journeeGaziere:str|None=None,
+                journeeGaziere:str| None=None,
                 pcs:str|int|float|None=None,
                 volumeConverti:int|float|None=None,
                 pta:str|int|float|None=None,

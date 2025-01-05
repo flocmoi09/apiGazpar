@@ -1,8 +1,9 @@
+"""Support for Helper."""
 from typing import Any
+import socket
 import aiohttp
 import async_timeout
-import socket
-from .exceptions import ClientAuthenticationError, ClientCommunicationError,ClientError
+from pygazpar.exceptions import ClientAuthenticationError, ClientCommunicationError,ClientError
 
 async def _api_wrapper(
     session:aiohttp.ClientSession,
@@ -24,7 +25,6 @@ async def _api_wrapper(
             )
             _verify_response_or_raise(response)
             return response
-           
 
     except TimeoutError as exception:
         msg = f"Timeout error fetching information - {exception}"
@@ -41,7 +41,6 @@ async def _api_wrapper(
         raise ClientError(
             msg,
         ) from exception
-    
 def _verify_response_or_raise(response: aiohttp.ClientResponse) -> None:
     """Verify that the response is valid."""
     if response.status in (401, 403):
